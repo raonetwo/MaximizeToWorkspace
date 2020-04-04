@@ -1,14 +1,13 @@
 const Meta = imports.gi.Meta;
 
-/* This has been tested with dynamic workspaces.  It
- * works with dynamic workspaces, but can work well if you have
+/* This has been tested with dynamic workspaces. It works well with dynamic workspaces, 
+ * but can work well  with static if you have
  * enough static ones.
  */
 
 /* Possible future options:
- *  Track each instance of application in history
  *  Move workspaces that start maximized
- *  target a specific desktop when none are empty
+ *  Target a specific desktop when none are empty (for static, not in immediate roadmap)
  *  (don't) skip first desktop
  */
 
@@ -38,6 +37,7 @@ const first_empty_workspace_index = (manager) => {
   return lastworkspace;
 }
 
+
 function check(act) {
   const win = act.meta_window;
   const workspacemanager = win.get_display().get_workspace_manager();
@@ -45,15 +45,17 @@ function check(act) {
     return;
   if (win.get_maximized() !== Meta.MaximizeFlags.BOTH) {
     // Check if it was maximized before
-    let name = win.get_gtk_unique_bus_name();
+    let name = win.get_id();
     if (_old_workspaces[name] !== undefined) {
+      // go back to the original workspace
       change_workspace(win, workspacemanager, _old_workspaces[name]);
       _old_workspaces[name] = undefined;  // remove it from array since we revert it back
     }
     return;
   }
-  w = win.get_workspace().list_windows()
+  let w = win.get_workspace().list_windows()
     .filter(w => w!==win && !w.is_always_on_all_workspaces());
+  // Check if movement is required based on the number of windows present on current workspace
   if (w.length>= 1) {
     let emptyworkspace = first_empty_workspace_index(workspacemanager);
 
@@ -61,8 +63,10 @@ function check(act) {
     if (emptyworkspace == win.get_workspace().index())
       return;
 
-    let name = win.get_gtk_unique_bus_name();
+    // Save window location history
+    let name = win.get_id();
     _old_workspaces[name] = win.get_workspace().index();
+    // change workspace
     change_workspace(win, workspacemanager, emptyworkspace);
   }
 }
@@ -70,9 +74,6 @@ function check(act) {
 const _handles = [];
 
 function enable() {
-  _handles.push(global.window_manager.connect('map', (_, act) => {
-    check(act);
-  }));
   _handles.push(global.window_manager.connect('size-change', (_, act, change) => {
     if (change === Meta.SizeChange.MAXIMIZE)
       check(act);

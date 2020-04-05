@@ -29,6 +29,9 @@ Or you can use keyboard shortcuts for quick navigation.
 
 This has been tested on Ubuntu 19.10 on gnome version 3.34.2, contribution are accepted for following:
 1. Test it out other gnome shell versions and update metadata.json
-2. Currently a few things are set as default like start with second workspace, no default workspace if run out of workspaces in static workspace mode, etc. These need to be exposed and set based on user preference.
-3. Multi Display support is not tested and further work may be required to add that. Kindly test and let me know.
+2. Currently the windows that start maximized (when you close maximized window and the window position is remembered) are not auto moved, you will have to unmaximize and maximize again to fix that. 
+I tried implementing it nut was facing this issue https://www.reddit.com/r/Ubuntu/comments/fuvsuh/new_maximized_window_are_moved_to_new_workspace/ refer the first commit.
+Any contributions to fix this are appreciated.
+3. Currently a few things are set as default like start with second workspace, no default workspace if run out of workspaces in static workspace mode, etc. These need to be exposed and set based on user preference.
+4. Multi Display support is not tested and further work may be required to add that. Kindly test and let me know.
 

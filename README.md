@@ -1,6 +1,15 @@
 # MaximizeToWorkspace
-Fork of https://github.com/rliang/gnome-shell-extension-maximize-to-workspace with history support
-Took elements from https://github.com/satran/fullscreenworkspace-satran.in
+
+Fork of https://github.com/rliang/gnome-shell-extension-maximize-to-workspace with added history support
+
+Took some elements from https://github.com/satran/fullscreenworkspace-satran.in that adds some basic history tracking
+
+***
+
+## What does this do?
+When a window is maximized this extension moves the window to first empty workspace it can find. When it is unmaximized the window is brought back to the original workspace it was present in, if possible.
+
+***
 
 To install run:
 ```
@@ -10,7 +19,13 @@ gnome-extensions enable maximize-to-workspace@raonetwo.github.com
 
 Then press Alt + F2 and in the dialogue box press "r" (no quotes) and enter  to refresh the gnome session and verify that the extension has been enabled
 
-This extension is best utilized with multi finger gestures are enabled e.g. using Fusuma
+***
+
+This extension is best utilized with multi finger gestures are enabled e.g. using Fusuma.
+
+Or you can use keyboard shortcuts for quick navigation.
+
+***
 
 This has been tested on Ubuntu 19.10 on gnome version 3.34.2, contribution are accepted for following:
 1. Test it out other gnome shell versions and update metadata.json

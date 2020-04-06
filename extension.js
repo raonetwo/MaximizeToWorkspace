@@ -41,6 +41,7 @@ function checkFullScreen() {
   global.workspace_manager.get_active_workspace().list_windows()
   .filter(w => w.get_maximized() === Meta.MaximizeFlags.BOTH)
   .filter(w => w.has_focus())
+  .filter(w => _old_workspaces[w.get_id()] === undefined)
   .forEach(w => check(w))
 }
 

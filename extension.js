@@ -80,7 +80,8 @@ function check(win) {
 const _handles = [];
 
 function enable() {
-  _handles.push(global.window_manager.connect('map', global.run_at_leisure.bind(global, checkFullScreen)));
+  _handles.push(global.window_manager.connect('map', (_, act) => {
+    global.run_at_leisure.bind(global, checkFullScreen)();}));
   _handles.push(global.window_manager.connect('size-change', (_, act, change) => {
     if (change === Meta.SizeChange.MAXIMIZE)
       check(act.meta_window);

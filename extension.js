@@ -40,6 +40,7 @@ const first_empty_workspace_index = (manager) => {
 function checkFullScreen() {
   global.workspace_manager.get_active_workspace().list_windows()
   .filter(w => w.get_maximized() === Meta.MaximizeFlags.BOTH)
+  .filter(w => w.has_focus())
   .forEach(w => check(w))
 }
 

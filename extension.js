@@ -37,14 +37,6 @@ const first_empty_workspace_index = (manager) => {
   return lastworkspace;
 }
 
-function checkFullScreen() {
-  global.workspace_manager.get_active_workspace().list_windows()
-  .filter(w => w.get_maximized() === Meta.MaximizeFlags.BOTH)
-  .filter(w => w.has_focus())
-  .filter(w => _old_workspaces[w.get_id()] === undefined)
-  .forEach(w => check(w))
-}
-
 function check(win) {
   const workspacemanager = win.get_display().get_workspace_manager();
   if (win.window_type !== Meta.WindowType.NORMAL)
@@ -80,8 +72,6 @@ function check(win) {
 const _handles = [];
 
 function enable() {
-  _handles.push(global.window_manager.connect('map', (_, act) => {
-    global.run_at_leisure.bind(global, checkFullScreen)();}));
   _handles.push(global.window_manager.connect('size-change', (_, act, change) => {
     if (change === Meta.SizeChange.MAXIMIZE)
       check(act.meta_window);

@@ -23,13 +23,13 @@ const change_workspace = (win, manager, index) => {
 
 const _old_workspaces = {};
 
-const first_empty_workspace_index = (manager) => {
+const first_empty_workspace_index = (manager, win) => {
   const n = manager.get_n_workspaces();
   let lastworkspace = n - 1;
   for (let i = 0; i < lastworkspace; ++i) {
     let win_count = manager.get_workspace_by_index(i)
               .list_windows()
-              .filter(w => !w.is_always_on_all_workspaces()).length;
+              .filter(w => !w.is_always_on_all_workspaces() && win.get_monitor()==w.get_monitor()).length;
     if (win_count < 1) { return i; }
   }
   // return last workspace by default, but always start with 1 
@@ -52,10 +52,10 @@ function check(win) {
     return;
   }
   let w = win.get_workspace().list_windows()
-    .filter(w => w!==win && !w.is_always_on_all_workspaces());
+    .filter(w => w!==win && !w.is_always_on_all_workspaces() && win.get_monitor()==w.get_monitor());
   // Check if movement is required based on the number of windows present on current workspace
   if (w.length>= 1) {
-    let emptyworkspace = first_empty_workspace_index(workspacemanager);
+    let emptyworkspace = first_empty_workspace_index(workspacemanager, win);
 
     // don't try to move it if we're already here
     if (emptyworkspace == win.get_workspace().index())

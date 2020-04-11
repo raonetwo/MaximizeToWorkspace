@@ -77,11 +77,14 @@ function checkFullScreen(win) {
   }
 }
 
-const _handles = [];
+const _window_manager_handles = [];
+const _display_handles = [];
 
 function enable() {
-  _handles.push(global.window_manager.connect('map', (_, act) => {global.run_at_leisure(checkFullScreen.bind(this, act.meta_window));}));
-  _handles.push(global.window_manager.connect('size-change', (_, act, change) => {
+  _display_handles.push(global.display.connect('window-created', (_, win) => {
+    global.run_at_leisure(checkFullScreen.bind(this, win));
+  }));
+  _window_manager_handles.push(global.window_manager.connect('size-change', (_, act, change) => {
     if (change === Meta.SizeChange.MAXIMIZE)
       check(act.meta_window);
     if (change === Meta.SizeChange.UNMAXIMIZE)
@@ -90,5 +93,6 @@ function enable() {
 }
 
 function disable() {
-  _handles.splice(0).forEach(h => global.window_manager.disconnect(h));
+  _window_manager_handles.splice(0).forEach(h => global.window_manager.disconnect(h));
+  _display_handles.splice(0).forEach(h => global.display.disconnect(h));
 }

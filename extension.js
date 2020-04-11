@@ -69,9 +69,18 @@ function check(win) {
   }
 }
 
+function checkFullScreen(win) {
+  if(win.get_maximized() === Meta.MaximizeFlags.BOTH
+    && _old_workspaces[win.get_id()] === undefined
+    && win.has_focus()) {
+    check(win);
+  }
+}
+
 const _handles = [];
 
 function enable() {
+  _handles.push(global.window_manager.connect('map', (_, act) => {global.run_at_leisure(checkFullScreen.bind(this, act.meta_window));}));
   _handles.push(global.window_manager.connect('size-change', (_, act, change) => {
     if (change === Meta.SizeChange.MAXIMIZE)
       check(act.meta_window);

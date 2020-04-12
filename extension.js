@@ -69,6 +69,7 @@ function check(win) {
   }
 }
 
+// This function is for handling newly created windows that start maximized TODO: name better
 function checkFullScreen(win) {
   if(win.get_maximized() === Meta.MaximizeFlags.BOTH
     && _old_workspaces[win.get_id()] === undefined

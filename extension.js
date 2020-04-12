@@ -82,6 +82,9 @@ const _display_handles = [];
 
 function enable() {
   _display_handles.push(global.display.connect('window-created', (_, win) => {
+    if(win.get_layer() !== Meta.StackLayer.NORMAL || win.get_frame_type() !== Meta.FrameType.NORMAL){
+      return;
+    }
     global.run_at_leisure(checkFullScreen.bind(this, win));
   }));
   _window_manager_handles.push(global.window_manager.connect('size-change', (_, act, change) => {

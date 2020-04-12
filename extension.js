@@ -1,4 +1,5 @@
 const Meta = imports.gi.Meta;
+const GLib = imports.gi.GLib;
 
 /* This has been tested with dynamic workspaces. It works well with dynamic workspaces, 
  * but can work well  with static if you have
@@ -82,7 +83,7 @@ const _display_handles = [];
 
 function enable() {
   _display_handles.push(global.display.connect('window-created', (_, win) => {
-    global.run_at_leisure(checkFullScreen.bind(this, win));
+    GLib.idle_add(GLib.PRIORITY_IDLE, checkFullScreen.bind(this, win));
   }));
   _window_manager_handles.push(global.window_manager.connect('size-change', (_, act, change) => {
     if (change === Meta.SizeChange.MAXIMIZE)

@@ -83,7 +83,7 @@ const _display_handles = [];
 
 function enable() {
   _display_handles.push(global.display.connect('window-created', (_, win) => {
-    if(win.get_layer() !== Meta.StackLayer.NORMAL || win.get_frame_type() !== Meta.FrameType.NORMAL){
+    if(win.get_layer() !== Meta.StackLayer.NORMAL){
       return;
     }
     global.run_at_leisure(checkFullScreen.bind(this, win));

@@ -39,20 +39,24 @@ const first_empty_workspace_index = (manager, win) => {
 
 function check(win) {
   const workspacemanager = win.get_display().get_workspace_manager();
-  if (win.window_type !== Meta.WindowType.NORMAL)
+  if (win.window_type !== Meta.WindowType.NORMAL) {
     return;
+  }
+  // list of other windows in this workspace, display
+  let w = win.get_workspace().list_windows()
+    .filter(w => w!==win && !w.is_always_on_all_workspaces() && win.get_monitor()==w.get_monitor());
   if (win.get_maximized() !== Meta.MaximizeFlags.BOTH) {
     // Check if it was maximized before
     let name = win.get_id();
     if (_old_workspaces[name] !== undefined) {
-      // go back to the original workspace
-      change_workspace(win, workspacemanager, _old_workspaces[name]);
+      // go back to the original workspace if no other window is present in the workspace
+      if (w.length == 0) {  // TODO expose this as user choice
+        change_workspace(win, workspacemanager, _old_workspaces[name]);
+      }
       _old_workspaces[name] = undefined;  // remove it from array since we revert it back
     }
     return;
   }
-  let w = win.get_workspace().list_windows()
-    .filter(w => w!==win && !w.is_always_on_all_workspaces() && win.get_monitor()==w.get_monitor());
   // Check if movement is required based on the number of windows present on current workspace
   if (w.length>= 1) {
     let emptyworkspace = first_empty_workspace_index(workspacemanager, win);

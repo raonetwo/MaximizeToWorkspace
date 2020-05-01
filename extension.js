@@ -90,6 +90,9 @@ function enable() {
     if(win.get_layer() !== Meta.StackLayer.NORMAL){
       return;
     }
+    if(win.get_frame_type() !== Meta.FrameType.NORMAL && win.get_frame_type() !== Meta.FrameType.BORDER){
+      return;
+    }
     global.run_at_leisure(checkFullScreen.bind(this, win));
   }));
   _window_manager_handles.push(global.window_manager.connect('size-change', (_, act, change) => {

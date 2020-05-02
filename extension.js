@@ -1,4 +1,5 @@
 const Meta = imports.gi.Meta;
+const GLib = imports.gi.GLib;
 
 /* This has been tested with dynamic workspaces. It works well with dynamic workspaces, 
  * but can work well  with static if you have
@@ -75,11 +76,19 @@ function check(win) {
 
 // This function is for handling newly created windows that start maximized TODO: name better
 function checkFullScreen(win) {
+  if (!win || !win.get_workspace()) {
+    return false;
+  }
+  var windowActor = win.get_compositor_private();
+  if (!windowActor || !windowActor.visible || !windowActor.has_allocation()) {
+    return false;
+  }
   if(win.get_maximized() === Meta.MaximizeFlags.BOTH
     && _old_workspaces[win.get_id()] === undefined
     && win.has_focus()) {
     check(win);
   }
+  return false;
 }
 
 const _window_manager_handles = [];
@@ -93,7 +102,7 @@ function enable() {
     if(win.get_frame_type() !== Meta.FrameType.NORMAL && win.get_frame_type() !== Meta.FrameType.BORDER){
       return;
     }
-    global.run_at_leisure(checkFullScreen.bind(this, win));
+    GLib.timeout_add(GLib.PRIORITY_LOW, 300, checkFullScreen.bind(this, win));
   }));
   _window_manager_handles.push(global.window_manager.connect('size-change', (_, act, change) => {
     if (change === Meta.SizeChange.MAXIMIZE)

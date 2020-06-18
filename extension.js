@@ -2,21 +2,21 @@ const Meta = imports.gi.Meta;
 const GLib = imports.gi.GLib;
 
 /* This has been tested with dynamic workspaces. It works well with dynamic workspaces, 
- * but can work well  with static if you have
- * enough static ones.
- * works well with external monitor as well 
- * the idea being windows opened on external monitor are meant for just that monitor,
- * any caveats that come with gnome because of handling of multi monitor setups by gnome will remain,
- * we do not try to address those right now, but we can open issues to track any nuances if found.
- * if there are ay problems we can create an issue to track that.
+ * but can work well  with static if you have enough static ones.
+ * Works well with external monitor as well, 
+ * the idea being windows opened on external monitor are meant for just that monitor.
+ * Any caveats that come with the way gnome handles multi monitor setups will remain
+ * as we do not try to address  those here. However, we can open issues to track any nuances if found.
+ * If there are any problems we can create an issue to track that.
  */
 
 /* Possible future options:
- *  Target a specific desktop when none are empty (for static, not in immediate roadmap)
+ *  Target a specific desktop when none are empty (for static, not in immediate roadmap). People can create issues with feature requests if they want.
  *  (don't) skip first desktop
+ *  Expose some of the hard coded things as preferences if someones asks for them.
  */
 
-
+// As the name suggests this function changes the workspace of the window to the provided index using the provided window manager.
 const change_workspace = (win, manager, index) => {
   const n = manager.get_n_workspaces();
   if (n <= index) {
@@ -32,6 +32,8 @@ const change_workspace = (win, manager, index) => {
 // TODO read and write from a file.
 const _old_workspaces = {};
 
+// This function gets the index of first empty workspace available for a window to be put on using the provided window manager
+// Relying on the fact that the last window will be left empty in case of dynamic workspace by gnome so we would always find one.
 const first_empty_workspace_index = (manager, win) => {
   const n = manager.get_n_workspaces();
   let lastworkspace = n - 1;
@@ -50,11 +52,12 @@ const first_empty_workspace_index = (manager, win) => {
 // TODO break function into smaller functions
 function check(win) {
   const workspacemanager = win.get_display().get_workspace_manager();
-  // Ensure that the window is noremal
+  // Ensure that the window is normal
   if (win.window_type !== Meta.WindowType.NORMAL) {
     return;
   }
-  // list of other windows in the current workspace and the current display
+  // get list of other windows in the current workspace and the current display
+  // TODO name this variable better.
   let w = win.get_workspace().list_windows()
     .filter(w => w!==win && !w.is_always_on_all_workspaces() && win.get_monitor()==w.get_monitor());
   // check if this method was called for a window that is not maximized
@@ -121,11 +124,11 @@ function checkFullScreen(win) {
   return false;
 }
 
-// need to understand "handles", these are just object arrays to store the "handles"
+// need to understand "handles", these are just object arrays to store the "handles" that connect with signals
 const _window_manager_handles = [];
 const _display_handles = [];
 
-// runs when the extension is enabled, basically connects to the signals and save them in handles
+// Runs when the extension is enabled, basically connects to the signals and save the handles
 // whenever the signal is emitted our connected handles, process the signal.
 // Again need to check the documentation on how this works, this was part of the relic code, this project is "inspired" by
 function enable() {

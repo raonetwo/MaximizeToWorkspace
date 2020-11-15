@@ -62,7 +62,7 @@ function check(win, change) {
     .filter(w => w!==win && !w.is_always_on_all_workspaces() && win.get_monitor()==w.get_monitor());
   // check if this method was called for a window that is not maximized
   // TODO this should be moved out into a separate function and unmaximized signal should be process with that function
-  if (change === Meta.SizeChange.UNFULLSCREEN || change === Meta.SizeChange.UNMAXIMIZE) {
+  if (change === Meta.SizeChange.UNFULLSCREEN || change === Meta.SizeChange.UNMAXIMIZE || (change === Meta.SizeChange.MAXIMIZE && win.get_maximized() !== Meta.MaximizeFlags.BOTH)) {
     // If the window is unmaximized, check if it was maximized before as we will want it to be returned to its original workspace
     let name = win.get_id();
     if (_old_workspaces[name] !== undefined) {

@@ -3,5 +3,5 @@
   "description": "Puts windows in a new workspace when maximized and back to original desktop when unmaximized",
   "uuid": "maximize-to-workspace@raonetwo.github.com",
   "url": "https://github.com/raonetwo/MaximizeToWorkspace",
-  "shell-version": ["3.34", "3.36"]
+  "shell-version": ["3.34", "3.36", "3.38"]
 }

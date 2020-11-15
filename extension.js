@@ -124,6 +124,14 @@ function checkFullScreen(win) {
   return false;
 }
 
+function handleWindowClose(act) {
+    let win = act.meta_window;
+    let name = win.get_id();
+    if (_old_workspaces[name] !== undefined) {
+      win.get_display().get_workspace_manager().get_workspace_by_index(_old_workspaces[name]).activate(global.get_current_time());
+    }
+};
+
 // need to understand "handles", these are just object arrays to store the "handles" that connect with signals
 const _window_manager_handles = [];
 const _display_handles = [];
@@ -153,6 +161,9 @@ function enable() {
   // Once both of them are done, I will work on my comprehension skills and on finding out it I have ADHD.
   _window_manager_handles.push(global.window_manager.connect('size-change', (_, act, change) => {
     check(act.meta_window, change);
+  }));
+  _window_manager_handles.push(global.window_manager.connect('destroy', (_, act) => {
+    handleWindowClose(act);
   }));
 }
 

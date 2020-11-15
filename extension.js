@@ -50,7 +50,7 @@ const first_empty_workspace_index = (manager, win) => {
 
 // TODO name this function better
 // TODO break function into smaller functions
-function check(win) {
+function check(win, change) {
   const workspacemanager = win.get_display().get_workspace_manager();
   // Ensure that the window is normal
   if (win.window_type !== Meta.WindowType.NORMAL) {
@@ -62,7 +62,7 @@ function check(win) {
     .filter(w => w!==win && !w.is_always_on_all_workspaces() && win.get_monitor()==w.get_monitor());
   // check if this method was called for a window that is not maximized
   // TODO this should be moved out into a separate function and unmaximized signal should be process with that function
-  if (win.get_maximized() !== Meta.MaximizeFlags.BOTH) {
+  if (change === Meta.SizeChange.UNFULLSCREEN || change === Meta.SizeChange.UNMAXIMIZE) {
     // If the window is unmaximized, check if it was maximized before as we will want it to be returned to its original workspace
     let name = win.get_id();
     if (_old_workspaces[name] !== undefined) {
@@ -119,7 +119,7 @@ function checkFullScreen(win) {
   if(win.get_maximized() === Meta.MaximizeFlags.BOTH
     && _old_workspaces[win.get_id()] === undefined
     && win.has_focus()) {
-    check(win);
+    check(win, Meta.SizeChange.MAXIMIZE);
   }
   return false;
 }
@@ -152,10 +152,7 @@ function enable() {
   // Gnome really need to work on their documentation or googe need to work on their search.
   // Once both of them are done, I will work on my comprehension skills and on finding out it I have ADHD.
   _window_manager_handles.push(global.window_manager.connect('size-change', (_, act, change) => {
-    if (change === Meta.SizeChange.MAXIMIZE)
-      check(act.meta_window);
-    if (change === Meta.SizeChange.UNMAXIMIZE)
-      check(act.meta_window);
+    check(act.meta_window, change);
   }));
 }
 

@@ -32,6 +32,10 @@ const change_workspace = (win, manager, index) => {
 // TODO read and write from a file.
 const _old_workspaces = {};
 
+// This object stores mapping of the windows that were maximized and their workspaces, 
+// we do not want to pollute the original map for maximize and minimize.
+const _full_screen_apps = {};
+
 // This function gets the index of first empty workspace available for a window to be put on using the provided window manager
 // Relying on the fact that the last window will be left empty in case of dynamic workspace by gnome so we would always find one.
 const first_empty_workspace_index = (manager, win) => {
@@ -39,12 +43,14 @@ const first_empty_workspace_index = (manager, win) => {
   let lastworkspace = n - 1;
   for (let i = 0; i < lastworkspace; ++i) {
     let win_count = manager.get_workspace_by_index(i)
-              .list_windows()
-              .filter(w => !w.is_always_on_all_workspaces() && win.get_monitor()==w.get_monitor()).length;
-    if (win_count < 1) { return i; }
+      .list_windows()
+      .filter(w => !w.is_always_on_all_workspaces() && win.get_monitor() == w.get_monitor()).length;
+    if (win_count < 1) {
+      return i;
+    }
   }
   // return last workspace by default, but always start with 1, possible programming bug that comes from the relic code
-  if (lastworkspace<1) lastworkspace=1
+  if (lastworkspace < 1) lastworkspace = 1
   return lastworkspace;
 }
 
@@ -56,19 +62,30 @@ function check(win, change) {
   if (win.window_type !== Meta.WindowType.NORMAL) {
     return;
   }
+  // key name we will use to store in map here it is Id.
+  let name = win.get_id();
   // get list of other windows in the current workspace and the current display
   // TODO name this variable better.
   let w = win.get_workspace().list_windows()
-    .filter(w => w!==win && !w.is_always_on_all_workspaces() && win.get_monitor()==w.get_monitor());
+    .filter(w => w !== win && !w.is_always_on_all_workspaces() && win.get_monitor() == w.get_monitor());
   // check if this method was called for a window that is not maximized
   // TODO this should be moved out into a separate function and unmaximized signal should be process with that function
   if (change === Meta.SizeChange.UNFULLSCREEN || change === Meta.SizeChange.UNMAXIMIZE || (change === Meta.SizeChange.MAXIMIZE && win.get_maximized() !== Meta.MaximizeFlags.BOTH)) {
+    // check if the app was previously full screened? 
+    // We handle maximize and full screen separately.
+    // TODO code clean up create clean short functions.
+    if (_full_screen_apps[name] !== undefined) {
+      if (w.length == 0) {
+        change_workspace(win, workspacemanager, _full_screen_apps[name]);
+      }
+      _full_screen_apps[name] = undefined;
+      return;
+    }
     // If the window is unmaximized, check if it was maximized before as we will want it to be returned to its original workspace
-    let name = win.get_id();
     if (_old_workspaces[name] !== undefined) {
       // go back to the original workspace only if no other window is present in the workspace
       // if another window is present on the current workspace it is likely that we unmaximized current window to work with them side by side 
-      if (w.length == 0) {  // TODO expose this as user choice
+      if (w.length == 0) { // TODO expose this as user choice
         change_workspace(win, workspacemanager, _old_workspaces[name]);
       }
       // remove it from array since we moved it back to its original workspace 
@@ -77,17 +94,20 @@ function check(win, change) {
     }
     return;
   }
+  // save windows with events of FullScreen and maximize to their respective maps to save window location history
+  if (change === Meta.SizeChange.FULLSCREEN) {
+    _full_screen_apps[name] = win.get_workspace().index();
+  } else {
+    _old_workspaces[name] = win.get_workspace().index();
+  }
   // Check if movement is required based on the number of windows present on current workspace
-  if (w.length>= 1) {
+  if (w.length >= 1) {
     let emptyworkspace = first_empty_workspace_index(workspacemanager, win);
 
     // don't try to move it if we're already here
     if (emptyworkspace == win.get_workspace().index())
       return;
 
-    // Save window location history
-    let name = win.get_id();
-    _old_workspaces[name] = win.get_workspace().index();
     // change workspace
     change_workspace(win, workspacemanager, emptyworkspace);
   }
@@ -116,20 +136,20 @@ function checkFullScreen(win) {
     return false;
   }
   // Check if this is a maximized window and it is indeed a new window and we haven't seen it before and it has "focus" whatever that means. TODO read the docs if they exist
-  if(win.get_maximized() === Meta.MaximizeFlags.BOTH
-    && _old_workspaces[win.get_id()] === undefined
-    && win.has_focus()) {
+  if (win.get_maximized() === Meta.MaximizeFlags.BOTH &&
+    _old_workspaces[win.get_id()] === undefined &&
+    win.has_focus()) {
     check(win, Meta.SizeChange.MAXIMIZE);
   }
   return false;
 }
 
 function handleWindowClose(act) {
-    let win = act.meta_window;
-    let name = win.get_id();
-    if (_old_workspaces[name] !== undefined) {
-      win.get_display().get_workspace_manager().get_workspace_by_index(_old_workspaces[name]).activate(global.get_current_time());
-    }
+  let win = act.meta_window;
+  let name = win.get_id();
+  if (_old_workspaces[name] !== undefined) {
+    win.get_display().get_workspace_manager().get_workspace_by_index(_old_workspaces[name]).activate(global.get_current_time());
+  }
 };
 
 // need to understand "handles", these are just object arrays to store the "handles" that connect with signals
@@ -144,13 +164,13 @@ function enable() {
   _display_handles.push(global.display.connect('window-created', (_, win) => {
     // There are some wierd windows, trying to move which result in gnome shell crash as they get closed while we are trying to move them
     // found this check through trial and error as I didn't read the doc (someone send me the link already)
-    if(win.get_layer() !== Meta.StackLayer.NORMAL){
+    if (win.get_layer() !== Meta.StackLayer.NORMAL) {
       return;
     }
     // Another check that arose from trial and error, if someone wants to check their similar extension they should try opening Unity Game Editor on ubuntu
     // and open a new firefox private window.
     // Need to ensure that the frameless window does not need to be moved as most of such windows are transient
-    if(win.get_frame_type() !== Meta.FrameType.NORMAL && win.get_frame_type() !== Meta.FrameType.BORDER){
+    if (win.get_frame_type() !== Meta.FrameType.NORMAL && win.get_frame_type() !== Meta.FrameType.BORDER) {
       return;
     }
     // This is required to add a delay before we try to move any windows om window-created event
@@ -171,7 +191,7 @@ function enable() {
 function disable() {
   // Why is the splice required? well we are emptying the array, can't really say what will happen if we do not use splice 
   // as I did not try it, this came from the legacy code, I suspect if we reenable the extension there might be issues.
-  
+
   // we just disconnet the handlers for the events.
   _window_manager_handles.splice(0).forEach(h => global.window_manager.disconnect(h));
   _display_handles.splice(0).forEach(h => global.display.disconnect(h));

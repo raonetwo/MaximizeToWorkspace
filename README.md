@@ -4,7 +4,7 @@ Coming from MacOS I got habituated to MacOS' style of window management when we 
 
 This extension is limited in its scope as it does not try to change overall gnome's window management, workspace management or display management. If you want independent workspaces on your second dispaly, you will have to ask gnome for this. I have tried to keep this extension as simple as possible, code cleanup is pending, but that does not impact this extension's usability.
 
-Check this extension out at https://extensions.gnome.org/extension/2857/maximize-to-workspace-with-history/.
+Check this extension out at https://extensions.gnome.org/extension/2857/maximize-to-workspace-with-history/. For best ( MacOS like ) experience set up 3/4 finger gestured to tile windows and switch workspaces.
 
 ***
 

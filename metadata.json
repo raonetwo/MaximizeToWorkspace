@@ -1,7 +1,7 @@
 {
   "name": "Maximize To Workspace With History",
   "description": "Like MacOS, puts windows in a new workspace when maximized or full-screened and brings you back to original workspacce when unmaximized or unfull-screened or the window gets closed. Recommended to use with multi finger gestures configured for your trackpad.",
-  "uuid": "maximize-to-workspace@raonetwo.github.com",
-  "url": "https://github.com/raonetwo/MaximizeToWorkspace",
-  "shell-version": ["3.36", "3.38", "40.0"]
+  "uuid": "maximize-to-workspace@timethy96.github.com",
+  "url": "https://github.com/timethy96/MaximizeToWorkspace",
+  "shell-version": ["3.36", "3.38", "40.0", "41.0", "42.0"]
 }

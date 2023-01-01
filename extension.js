@@ -132,7 +132,8 @@ function enable() {
   }));
   // Add size-change event handler for windows that are already created.
   _window_manager_handles.push(global.window_manager.connect('size-change', (_, act, change) => {
-    check(act.meta_window, change);
+    // check(act.meta_window, change);
+    GLib.timeout_add(GLib.PRIORITY_LOW, 300, check.bind(this, act.meta_window, change));
   }));
   _window_manager_handles.push(global.window_manager.connect('destroy', (_, act) => {
     handleWindowClose(act);

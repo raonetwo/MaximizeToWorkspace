@@ -17,7 +17,7 @@ Fork of https://github.com/rliang/gnome-shell-extension-maximize-to-workspace wi
 ## What does this do?
 When a window is maximized this extension moves the window to the first empty workspace it can find. When it is unmaximized the window is brought back to the original workspace it was present in, if possible. Same is done when you enter full-screen or unfull-screen on you application. When you close the window you will be taken back to the workspace you opened the application in. If however you open a new app on the workspace with already maximized window and then tile the maximized window from maximized state to left or right, you won't be moved back to the original workspace, because the assumption here is that you want to work with the two applications simultaneously.
 
-It is suggested that you use it with some sort of trackpad gesture based window tiling and navigation of workspace. I use fusuma you can use that or anything that works for you like touchegg or an extension available for gnome.
+It is suggested that you use it with some sort of trackpad gesture based window tiling and navigation of workspace. I use fusuma you can use that or anything that works for you like touchegg or an extension available for gnome like https://extensions.gnome.org/extension/4245/gesture-improvements/.
 
 To use this, I would suggest you get it from https://extensions.gnome.org/extension/2857/maximize-to-workspace-with-history/ .
 
@@ -33,7 +33,7 @@ Then press Alt + F2 and in the dialogue box press "r" (no quotes) and enter to r
 
 ***
 
-This extension is best utilized with multi finger gestures are enabled e.g. using Fusuma.
+This extension is best utilized with multi finger gestures are enabled e.g. using https://extensions.gnome.org/extension/4245/gesture-improvements/.
 
 Or you can use keyboard shortcuts for quick navigation.
 

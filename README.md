@@ -1,4 +1,4 @@
-# MaximizeToWorkspace
+# MaximizeToWorkspace [Not actively maintained]
 
 Coming from MacOS I got habituated to MacOS' style of window management when we maximize it. It allows for focussing on one thing at a time as the desktop environment gets out of your way. I wanted to use same thing in Gnome but found the suppport for it utterly lacking/non-existant. Based on attempts made by people earlier, I have tried to recreate a similar experience of maximizing minimizing full screening and closing windows as on MacOS. I would say it goes one step beyond that by remaining true to gnome's way of dealing with windows and allowing for using multi app workflows without degrading your experience. I believe this extension will work great with auto tiling enabled but I leave that to other extensions. 
 

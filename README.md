@@ -1,6 +1,6 @@
-# MaximizeToWorkspace [Not actively maintained]
+# MaximizeToWorkspace [No longer maintained]
 
-Check this extension out at https://extensions.gnome.org/extension/2857/maximize-to-workspace-with-history/. For best ( MacOS like ) experience set up 3/4 finger gestured to tile windows and switch workspaces.
+Check this extension out at https://extensions.gnome.org/extension/2857/maximize-to-workspace-with-history/. For best ( MacOS like ) experience set up 3/4 finger gestures to tile windows and switch workspaces.
 
 ***
 
